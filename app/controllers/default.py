@@ -25,17 +25,28 @@ def login():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
+        # Verifica se já existe um usuário com mesmo username ou email
+        existing_user = User.query.filter(
+            (User.username == form.username.data) | (User.email == form.email.data)
+        ).first()
+        if existing_user:
+            flash('Usuário ou email já cadastrado.', 'warning')
+            return redirect(url_for('register'))
+
+        # Cria novo usuário
         user = User(
             username=form.username.data,
             email=form.email.data,
             name=form.name.data
         )
-        user.set_password(form.password.data)  # Agora usando hashing
+        user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Parabéns, você agora é um usuário registrado!')
+
+        flash('Parabéns, você agora é um usuário registrado!', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
+
 
 @app.route('/test_connection')
 def test_connection():
@@ -45,3 +56,9 @@ def test_connection():
         return "Conexão bem-sucedida com o banco de dados!"
     except Exception as e:
         return f"Erro na conexão: {str(e)}", 500
+    
+@app.route('/users')
+def list_users():
+    users = User.query.all()  # Busca todos os usuários
+    return render_template('list_users.html', users=users)
+

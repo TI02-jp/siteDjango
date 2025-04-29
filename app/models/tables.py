@@ -12,9 +12,10 @@ class User(db.Model):
 
     def __init__(self, username, password, name, email):
         self.username = username
-        self.password = password
+        self.set_password(password)  # Já criptografa aqui
         self.name = name
         self.email = email
+
         
     def __repr__(self):
         return "<User %r>" % self.username
