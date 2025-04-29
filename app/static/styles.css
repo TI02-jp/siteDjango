@@ -1,0 +1,62 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 20px;
+    font-size: 2em;
+}
+
+main {
+    padding: 40px 20px;
+}
+
+.intro {
+    margin-bottom: 30px;
+}
+
+.intro h2 {
+    color: #4CAF50;
+    font-size: 1.8em;
+}
+
+.intro p {
+    font-size: 1.2em;
+    color: #555;
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.action-btn .btn {
+    padding: 12px 20px;
+    font-size: 1.2em;
+    color: white;
+    background-color: #4CAF50;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.action-btn .btn:hover {
+    background-color: #45a049;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    padding: 15px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}

@@ -1,46 +1,116 @@
 import mysql.connector
+from mysql.connector import errorcode
+import logging
+from dotenv import load_dotenv
+import os
 
-banco = None
+# Configuração de logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
-try:
-    # criar conexao ao banco de dados
-    banco = mysql.connector.connect(
-        host='localhost',
-        database='cadastro_empresas',
-        user='root',
-        passwd='ti02@2025'
-    )
+# Carrega variáveis de ambiente
+load_dotenv()
 
-    cursor = banco.cursor()
+class DatabaseManager:
+    def __init__(self):
+        self.connection = None
+        self.cursor = None
+        
+    def connect(self):
+        """Estabelece conexão com o banco de dados"""
+        try:
+            self.connection = mysql.connector.connect(
+                host=os.getenv('DB_HOST', 'localhost'),
+                database=os.getenv('DB_NAME', 'cadastro_empresas'),
+                user=os.getenv('DB_USER', 'root'),
+                password=os.getenv('DB_PASSWORD', 'ti02@2025'),
+                autocommit=False
+            )
+            self.cursor = self.connection.cursor(dictionary=True)
+            logger.info("Conexão com o MySQL estabelecida com sucesso")
+            return True
+            
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                logger.error("Erro: Acesso negado. Verifique usuário e senha")
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                logger.error(f"Banco de dados {os.getenv('DB_NAME')} não existe")
+            else:
+                logger.error(f"Erro de conexão: {err}")
+            return False
 
-    # Comando SQL para alterar a coluna DataAberturaEmpresa para NOT NULL
-    alterar_coluna_SQL = """
-    ALTER TABLE tbl_empresas
-    MODIFY COLUMN DataAberturaEmpresa VARCHAR(10) NOT NULL;
-    """
-    cursor.execute(alterar_coluna_SQL)
+    def execute_query(self, query, params=None):
+        """Executa uma query SQL"""
+        try:
+            self.cursor.execute(query, params or ())
+            self.connection.commit()
+            logger.info("Query executada com sucesso")
+            return True
+        except mysql.connector.Error as err:
+            self.connection.rollback()
+            logger.error(f"Erro na query: {err}\nQuery: {query}")
+            return False
 
-    # Comando SQL para adicionar a PRIMARY KEY (se ainda não existir)
-    adicionar_pk_SQL = """
-    ALTER TABLE tbl_empresas
-    ADD PRIMARY KEY (IdEmpresas);
-    """
+    def close(self):
+        """Fecha a conexão com o banco de dados"""
+        if self.connection and self.connection.is_connected():
+            if self.cursor:
+                self.cursor.close()
+            self.connection.close()
+            logger.info("Conexão MySQL encerrada")
+
+    def check_table_exists(self, table_name):
+        """Verifica se uma tabela existe no banco de dados"""
+        query = """
+        SELECT COUNT(*) as count 
+        FROM information_schema.tables 
+        WHERE table_schema = %s AND table_name = %s
+        """
+        self.execute_query(query, (os.getenv('DB_NAME'), table_name))
+        result = self.cursor.fetchone()
+        return result['count'] > 0 if result else False
+
+def main():
+    db = DatabaseManager()
+    
+    if not db.connect():
+        return
+    
     try:
-        cursor.execute(adicionar_pk_SQL)
-        print("Primary Key adicionada com sucesso.")
-    except mysql.connector.Error as erro:
-        if erro.errno == 1068:  # Código de erro do MySQL para "Primary key already exists"
-            print("Primary Key já existe.")
-        else:
-            print("Erro ao adicionar Primary Key: {}".format(erro))
+        # 1. Verificar se a tabela existe
+        if not db.check_table_exists('tbl_empresas'):
+            logger.error("Tabela tbl_empresas não encontrada")
+            return
+        
+        # 2. Alterar coluna para NOT NULL
+        alter_query = """
+        ALTER TABLE tbl_empresas
+        MODIFY COLUMN DataAberturaEmpresa VARCHAR(10) NOT NULL;
+        """
+        if db.execute_query(alter_query):
+            logger.info("Coluna DataAberturaEmpresa alterada para NOT NULL")
+        
+        # 3. Adicionar PRIMARY KEY (se não existir)
+        pk_query = """
+        ALTER TABLE tbl_empresas
+        ADD PRIMARY KEY (IdEmpresas);
+        """
+        try:
+            if db.execute_query(pk_query):
+                logger.info("Primary Key adicionada com sucesso")
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_PRIMARY_KEY_DEFINED:
+                logger.info("Primary Key já existe na tabela")
+            else:
+                logger.error(f"Erro ao adicionar Primary Key: {err}")
+                
+    except Exception as e:
+        logger.error(f"Erro durante as operações: {e}")
+    finally:
+        db.close()
 
-    banco.commit()
-    print("Alterações realizadas com sucesso.")
-
-except mysql.connector.Error as erro:
-    print("Falha na operação com o MySQL: {}".format(erro))
-finally:
-    if banco.is_connected():
-        cursor.close()
-        banco.close()
-        print("Conexao ao MySQL finalizada")
+if __name__ == "__main__":
+    main()
