@@ -2,6 +2,7 @@ from flask import render_template, redirect, url_for, flash
 from app import app, db
 from app.loginForms import LoginForm, RegistrationForm
 from app.models.tables import User
+from sqlalchemy import text  # Certifique-se de importar o 'text'
 
 @app.route('/')
 def home():
@@ -36,11 +37,11 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-@app.route('/test')
-def test():
+@app.route('/test_connection')
+def test_connection():
     try:
-        # Teste simples do banco de dados
-        db.session.execute('SELECT 1')
-        return "Teste bem-sucedido!"
+        # Usando 'text()' para a consulta SQL
+        result = db.session.execute(text('SELECT 1'))
+        return "Conexão bem-sucedida com o banco de dados!"
     except Exception as e:
-        return f"Erro no teste: {str(e)}", 500
+        return f"Erro na conexão: {str(e)}", 500

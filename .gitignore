@@ -16,3 +16,18 @@ migrations/
 
 # Ignorar o arquivo SQLite (se você estiver usando SQLite para o desenvolvimento local)
 *.db
+
+#Ignorar configurações de VS Code
+.vscode/
+
+# Ignorar cache do pip
+pip-wheel-metadata/
+
+# Ignorar arquivos de log
+*.log
+
+# Ignorar arquivos de cobertura de teste
+.coverage
+coverage.xml
+*.cover
+nosetests.xml
