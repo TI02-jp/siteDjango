@@ -1,0 +1,18 @@
+# Ignorar arquivos .env
+.env
+
+# Ignorar arquivos de compilação e logs
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Ignorar diretórios específicos do ambiente virtual
+venv/
+env/
+
+# Ignorar a pasta de migrações (se necessário)
+migrations/
+
+# Ignorar o arquivo SQLite (se você estiver usando SQLite para o desenvolvimento local)
+*.db
