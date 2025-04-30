@@ -19,8 +19,11 @@
                     <strong>Email:</strong> {{ user.email }} <br>
                     <hr>
                 </li>
+            {% else %}
+                <li><strong>Nenhum usuário encontrado.</strong></li>
             {% endfor %}
         </ul>
+        
     </main>
 
     <footer>

@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash
 from app import app, db
 from app.loginForms import LoginForm, RegistrationForm
 from app.models.tables import User
-from sqlalchemy import text  # Certifique-se de importar o 'text'
+from sqlalchemy import text
 
 @app.route('/')
 def home():
@@ -13,12 +13,12 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         # Lógica de autenticação do usuário
-        user = User.query.filter_by(username=form.username.data).first()  # Busca o usuário pelo nome de usuário
-        if user and user.check_password(form.password.data):  # Verifica se a senha está correta
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
             flash('Login bem-sucedido!', 'success')
-            return redirect(url_for('home'))  # Redireciona para a página inicial
+            return redirect(url_for('home'))
         else:
-            flash('Credenciais inválidas', 'danger')  # Se não encontrar ou senha errada
+            flash('Credenciais inválidas', 'danger')
     return render_template('login.html', form=form)
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -37,7 +37,8 @@ def register():
         user = User(
             username=form.username.data,
             email=form.email.data,
-            name=form.name.data
+            name=form.name.data,
+            password=form.password.data
         )
         user.set_password(form.password.data)
         db.session.add(user)
@@ -51,7 +52,7 @@ def register():
 @app.route('/test_connection')
 def test_connection():
     try:
-        # Usando 'text()' para a consulta SQL
+        
         result = db.session.execute(text('SELECT 1'))
         return "Conexão bem-sucedida com o banco de dados!"
     except Exception as e:
@@ -59,6 +60,7 @@ def test_connection():
     
 @app.route('/users')
 def list_users():
-    users = User.query.all()  # Busca todos os usuários
+    users = User.query.all()
+    print(users)
     return render_template('list_users.html', users=users)
 
