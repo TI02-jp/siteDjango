@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Cadastro de Empresa</h2>
+    
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form.id_empresa.label(class="form-label") }}
+                    {{ form.id_empresa(class="form-control") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.nome_empresa.label(class="form-label") }}
+                    {{ form.nome_empresa(class="form-control") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.cnpj.label(class="form-label") }}
+                    {{ form.cnpj(class="form-control", id="cnpj") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.data_abertura.label(class="form-label") }}
+                    {{ form.data_abertura(class="form-control", id="data_abertura") }}
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form.socio_administrador.label(class="form-label") }}
+                    {{ form.socio_administrador(class="form-control") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.tributacao.label(class="form-label") }}
+                    {{ form.tributacao(class="form-control") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.regime_lancamento.label(class="form-label") }}
+                    {{ form.regime_lancamento(class="form-select") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.atividade_principal.label(class="form-label") }}
+                    {{ form.atividade_principal(class="form-control") }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            {{ form.sistemas_consultorias.label(class="form-label") }}
+            {{ form.sistemas_consultorias(class="form-select", multiple="multiple", size="5") }}
+        </div>
+        
+        <div class="mb-3 form-check">
+            {{ form.sistema_atualizado(class="form-check-input") }}
+            {{ form.sistema_atualizado.label(class="form-check-label") }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Cadastrar</button>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $('#cnpj').mask('00.000.000/0000-00');
+        $('#data_abertura').mask('00/00/0000');
+    });
+</script>
+{% endblock %}

@@ -22,5 +22,6 @@ csrf = CSRFProtect(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+from app.forms import * 
 # Importa os controladores
-from app.controllers import default
+from app.controllers import routes

@@ -3,6 +3,9 @@ from app import app, db
 from app.loginForms import LoginForm, RegistrationForm
 from app.models.tables import User
 from sqlalchemy import text
+from app.forms import EmpresaForm
+from datetime import datetime
+from app.models.tables import Empresa
 
 @app.route('/')
 def home():
@@ -64,3 +67,41 @@ def list_users():
     print(users)
     return render_template('list_users.html', users=users)
 
+@app.route('/cadastrar-empresa', methods=['GET', 'POST'])
+def cadastrar_empresa():
+    form = EmpresaForm()
+    
+    # Obtém o ano atual
+    ano_atual = datetime.now().year
+    
+    if form.validate_on_submit():
+        try:
+            nova_empresa = Empresa(
+                IdEmpresas=form.id_empresa.data,
+                NomeEmpresa=form.nome_empresa.data,
+                CNPJ=form.cnpj.data.replace('.', '').replace('/', '').replace('-', ''),
+                DataAbertura=form.data_abertura.data,
+                SocioAdministrador=form.socio_administrador.data,
+                Tributacao=form.tributacao.data,
+                RegimeLancamento=RegimeLancamento(form.regime_lancamento.data),
+                AtividadePrincipal=form.atividade_principal.data,
+                SistemasConsultorias=','.join(form.sistemas_consultorias.data),
+                SistemaAtualizado=form.sistema_atualizado.data
+            )
+            
+            db.session.add(nova_empresa)
+            db.session.commit()
+            
+            flash('Empresa cadastrada com sucesso!', 'success')
+            return redirect(url_for('listar_empresas'))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao cadastrar empresa: {str(e)}', 'danger')
+    
+    return render_template('empresas/cadastrar.html', form=form, ano_atual=ano_atual)
+
+@app.route('/listar-empresas')
+def listar_empresas():
+    empresas = Empresa.query.all()
+    return render_template('empresas/listar.html', empresas=empresas)

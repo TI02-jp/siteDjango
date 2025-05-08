@@ -1,4 +1,5 @@
 from app import db
+from enum import Enum
 from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(db.Model):
@@ -42,3 +43,24 @@ class Post(db.Model):
 
     def __repr__(self):
         return "<Post %r>" % self.id
+    
+class RegimeLancamento(Enum):
+    CAIXA = 'Caixa'
+    COMPETENCIA = 'Competência'
+
+class Empresa(db.Model):
+    __tablename__ = "tbl_empresas"
+    
+    IdEmpresas = db.Column(db.Integer, primary_key=True, autoincrement=False)
+    NomeEmpresa = db.Column(db.String(100), nullable=False)
+    CNPJ = db.Column(db.String(18), unique=True, nullable=False)
+    DataAbertura = db.Column(db.String(10), nullable=False)
+    SocioAdministrador = db.Column(db.String(100))
+    Tributacao = db.Column(db.String(50))
+    RegimeLancamento = db.Column(db.Enum(RegimeLancamento))
+    AtividadePrincipal = db.Column(db.String(100))
+    SistemasConsultorias = db.Column(db.String(200))  # Armazenará como string separada por vírgulas
+    SistemaAtualizado = db.Column(db.Boolean, default=False)
+    
+    def __repr__(self):
+        return f"<Empresa {self.IdEmpresas}: {self.NomeEmpresa}>"
