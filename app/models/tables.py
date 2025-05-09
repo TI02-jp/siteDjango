@@ -1,5 +1,6 @@
 from app import db
 from enum import Enum
+from datetime import date
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -50,18 +51,19 @@ class RegimeLancamento(Enum):
     COMPETENCIA = 'Competência'
 
 class Empresa(db.Model):
-    __tablename__ = "tbl_empresas"
-    
-    IdEmpresas = db.Column(db.Integer, primary_key=True, autoincrement=False)
-    NomeEmpresa = db.Column(db.String(100), nullable=False)
-    CNPJ = db.Column(db.String(18), unique=True, nullable=False)
-    DataAbertura = db.Column(db.String(10), nullable=False)
-    SocioAdministrador = db.Column(db.String(100))
-    Tributacao = db.Column(db.String(50))
-    RegimeLancamento = db.Column(db.Enum(RegimeLancamento))
-    AtividadePrincipal = db.Column(db.String(100))
-    SistemasConsultorias = db.Column(db.String(200))  # Armazenará como string separada por vírgulas
+    __tablename__ = 'tbl_empresas'  # Especificando o nome da tabela como tbl_empresas
+
+    id = db.Column(db.Integer, primary_key=True)
+    CodigoEmpresa = db.Column(db.String(100), nullable=False)
+    NomeEmpresa = db.Column(db.String(200), nullable=False)
+    CNPJ = db.Column(db.String(14), nullable=False, unique=True)
+    DataAbertura = db.Column(db.Date, nullable=False)  # Tipo Date para armazenar data
+    SocioAdministrador = db.Column(db.String(200), nullable=False)
+    Tributacao = db.Column(db.String(100), nullable=False)
+    RegimeLancamento = db.Column(db.String(20), nullable=False)
+    AtividadePrincipal = db.Column(db.String(200), nullable=False)
+    SistemasConsultorias = db.Column(db.String(200), nullable=False)
     SistemaAtualizado = db.Column(db.Boolean, default=False)
-    
+
     def __repr__(self):
-        return f"<Empresa {self.IdEmpresas}: {self.NomeEmpresa}>"
+        return f"<Empresa {self.NomeEmpresa}>"

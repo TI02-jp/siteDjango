@@ -75,32 +75,50 @@ def list_users():
     return render_template('list_users.html', users=users)
 
 @app.route('/cadastrar_empresa', methods=['GET', 'POST'])
-@login_required
 def cadastrar_empresa():
-    form = EmpresaForm()  # Supondo que você tenha um formulário para cadastrar empresas
+    form = EmpresaForm()
+    
     if form.validate_on_submit():
-        # Aqui você pode processar o cadastro da empresa
-        empresa = Empresa(
-            NomeEmpresa=form.nome_empresa.data,
-            CNPJ=form.cnpj.data,
-            DataAbertura=form.data_abertura.data,
-            SocioAdministrador=form.socio_administrador.data,
-            Tributacao=form.tributacao.data,
-            RegimeLancamento=form.regime_lancamento.data,
-            AtividadePrincipal=form.atividade_principal.data,
-            SistemaAtualizado=form.sistema_atualizado.data
+        # Capturando os dados do formulário
+        codigo_empresa = form.codigo_empresa.data
+        nome_empresa = form.nome_empresa.data
+        cnpj = form.cnpj.data
+        data_abertura = form.data_abertura.data
+        socio_administrador = form.socio_administrador.data
+        tributacao = form.tributacao.data
+        regime_lancamento = form.regime_lancamento.data
+        atividade_principal = form.atividade_principal.data
+        sistemas_consultorias = form.sistemas_consultorias.data
+        sistema_atualizado = form.sistema_atualizado.data
+
+        # Criando uma nova empresa
+        nova_empresa = Empresa(
+            CodigoEmpresa=codigo_empresa,
+            NomeEmpresa=nome_empresa,
+            CNPJ=cnpj,
+            DataAbertura=data_abertura,
+            SocioAdministrador=socio_administrador,
+            Tributacao=tributacao,
+            RegimeLancamento=regime_lancamento,
+            AtividadePrincipal=atividade_principal,
+            SistemasConsultorias=sistemas_consultorias,
+            SistemaAtualizado=sistema_atualizado
         )
-        db.session.add(empresa)
+        # Inserindo no banco de dados
+        db.session.add(nova_empresa)
         db.session.commit()
-        flash('Empresa cadastrada com sucesso!', 'success')
-        return redirect(url_for('visualizar_empresas'))  # Corrigido para o nome da rota
+        
+        print("Empresa salva com sucesso:", nova_empresa)
+        return redirect(url_for('sucesso'))  # Redireciona para a página de sucesso
+
     return render_template('empresas/cadastrar.html', form=form)
 
 @app.route('/listar_empresas')
 @login_required
 def visualizar_empresas():
     empresas = Empresa.query.all()  # Buscar todas as empresas cadastradas
-    return render_template('listar.html', empresas=empresas)
+    print("Empresas encontradas:", empresas)
+    return render_template('empresas/listar.html', empresas=empresas)
 
 @app.route('/relatorios')
 @login_required

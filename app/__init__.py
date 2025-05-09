@@ -37,6 +37,10 @@ def inject_now():
     from datetime import datetime
     return {'now': datetime.now}
 
+# Criação das tabelas (apenas para desenvolvimento, não use em produção)
+with app.app_context():
+    db.create_all()  # Isso cria as tabelas no banco de dados, se não existirem
+
 # Importa os controladores (depois de tudo configurado)
 from app.forms import *
 from app.controllers import routes

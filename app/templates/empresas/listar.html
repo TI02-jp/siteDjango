@@ -10,7 +10,6 @@
                 <th>Nome</th>
                 <th>CNPJ</th>
                 <th>Data Abertura</th>
-                <th>Telefone</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -19,8 +18,7 @@
             <tr>
                 <td>{{ empresa.NomeEmpresa }}</td>
                 <td>{{ empresa.CNPJ }}</td>
-                <td>{{ empresa.DataAberturaEmpresa.strftime('%d/%m/%Y') if empresa.DataAberturaEmpresa else 'N/A' }}</td>
-                <td>{{ empresa.Telefone }}</td>
+                <td>{{ empresa.DataAbertura.strftime('%d/%m/%Y') if empresa.DataAbertura else 'N/A' }}</td>
                 <td>
                     <a href="#" class="btn btn-sm btn-info">Editar</a>
                     <a href="#" class="btn btn-sm btn-danger">Excluir</a>
