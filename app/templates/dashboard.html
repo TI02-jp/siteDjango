@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Controle</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}">Início</a></li>
+                <li><a href="{{ url_for('logout') }}">Sair</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <h1>Bem-vindo, {{ current_user.name }}!</h1>
+        <div class="options">
+            <h2>O que você deseja fazer?</h2>
+            <ul>
+                <li><a href="{{ url_for('cadastrar_empresa') }}">Cadastrar nova empresa</a></li>
+                <li><a href="{{ url_for('visualizar_empresas') }}">Visualizar empresas cadastradas</a></li>
+                <li><a href="{{ url_for('relatorios') }}">Relatórios</a></li>
+            </ul>
+        </div>
+    </main>
+</body>
+</html>

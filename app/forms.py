@@ -10,7 +10,9 @@ class EmpresaForm(FlaskForm):
     socio_administrador = StringField('Sócio Administrador')
     tributacao = StringField('Tributação da Empresa')
     regime_lancamento = SelectField('Regime de Lançamento', 
-                                  choices=[('Caixa', 'Caixa'), ('Competência', 'Competência')])
+                                    choices=[('CAIXA', 'Caixa'), 
+                                             ('COMPETENCIA', 'Competência')], 
+                                    validators=[DataRequired()])
     atividade_principal = StringField('Atividade Principal')
     sistemas_consultorias = SelectMultipleField('Sistemas/Consultorias', 
                                              choices=[
