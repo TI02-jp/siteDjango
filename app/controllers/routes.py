@@ -7,6 +7,7 @@ from sqlalchemy import text
 from app.forms import EmpresaForm
 from datetime import datetime
 from app.models.tables import Empresa, RegimeLancamento
+import uuid
 
 @app.route('/')
 def home():
@@ -77,39 +78,29 @@ def list_users():
 @app.route('/cadastrar_empresa', methods=['GET', 'POST'])
 def cadastrar_empresa():
     form = EmpresaForm()
-    
     if form.validate_on_submit():
-        # Capturando os dados do formulário
-        codigo_empresa = form.codigo_empresa.data
-        nome_empresa = form.nome_empresa.data
-        cnpj = form.cnpj.data
-        data_abertura = form.data_abertura.data
-        socio_administrador = form.socio_administrador.data
-        tributacao = form.tributacao.data
-        regime_lancamento = form.regime_lancamento.data
-        atividade_principal = form.atividade_principal.data
-        sistemas_consultorias = form.sistemas_consultorias.data
-        sistema_atualizado = form.sistema_atualizado.data
+        try:
+            nova_empresa = Empresa(
+                CodigoEmpresa=form.codigo_empresa.data,
+                NomeEmpresa=form.nome_empresa.data,
+                CNPJ=form.cnpj.data,
+                DataAbertura=form.data_abertura.data,
+                SocioAdministrador=form.socio_administrador.data,
+                Tributacao=form.tributacao.data,
+                RegimeLancamento=form.regime_lancamento.data,
+                AtividadePrincipal=form.atividade_principal.data,
+                SistemasConsultorias=form.sistemas_consultorias.data,
+                SistemaAtualizado=form.sistema_atualizado.data
+            )
 
-        # Criando uma nova empresa
-        nova_empresa = Empresa(
-            CodigoEmpresa=codigo_empresa,
-            NomeEmpresa=nome_empresa,
-            CNPJ=cnpj,
-            DataAbertura=data_abertura,
-            SocioAdministrador=socio_administrador,
-            Tributacao=tributacao,
-            RegimeLancamento=regime_lancamento,
-            AtividadePrincipal=atividade_principal,
-            SistemasConsultorias=sistemas_consultorias,
-            SistemaAtualizado=sistema_atualizado
-        )
-        # Inserindo no banco de dados
-        db.session.add(nova_empresa)
-        db.session.commit()
-        
-        print("Empresa salva com sucesso:", nova_empresa)
-        return redirect(url_for('sucesso'))  # Redireciona para a página de sucesso
+            db.session.add(nova_empresa)
+            db.session.commit()
+            flash('Empresa cadastrada com sucesso!', 'success')
+            return redirect(url_for('listar_empresas'))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao cadastrar empresa: {e}', 'danger')
 
     return render_template('empresas/cadastrar.html', form=form)
 

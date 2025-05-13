@@ -10,8 +10,8 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label for="codigo_empresa" class="form-label">Código da Empresa</label>
-                    <input type="text" class="form-control" id="codigo_empresa" name="CodigoEmpresa" required>
+                    {{ form.codigo_empresa.label(class="form-label") }}
+                    {{ form.codigo_empresa(class="form-control") }}
                 </div>
                 
                 <div class="mb-3">
@@ -25,8 +25,8 @@
                 </div>
                 
                 <div class="mb-3">
-                    <label for="data_abertura" class="form-label">Data de Abertura</label>
-                    {{ form.data_abertura(class="form-control", id="data_abertura", type="date") }} <!-- Alterado aqui -->
+                    {{ form.data_abertura.label(class="form-label") }}
+                    {{ form.data_abertura(class="form-control", id="data_abertura", type="date") }}
                 </div>
             </div>
             
@@ -38,12 +38,26 @@
                 
                 <div class="mb-3">
                     {{ form.tributacao.label(class="form-label") }}
-                    {{ form.tributacao(class="form-control") }}
+                    <div>
+                        {% for value, label in form.tributacao.choices %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tributacao" value="{{ value }}" id="{{ value }}" {% if form.tributacao.data == value %}checked{% endif %}>
+                                <label class="form-check-label" for="{{ value }}">{{ label }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
                 
                 <div class="mb-3">
                     {{ form.regime_lancamento.label(class="form-label") }}
-                    {{ form.regime_lancamento(class="form-select") }}
+                    <div>
+                        {% for value, label in form.regime_lancamento.choices %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="regime_lancamento" value="{{ value }}" id="{{ value }}" {% if form.regime_lancamento.data == value %}checked{% endif %}>
+                                <label class="form-check-label" for="{{ value }}">{{ label }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
                 
                 <div class="mb-3">
@@ -52,17 +66,26 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="mb-3">
             {{ form.sistemas_consultorias.label(class="form-label") }}
-            {{ form.sistemas_consultorias(class="form-select", multiple="multiple", size="5") }}
+            <div>
+                {% for value, label in form.sistemas_consultorias.choices %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="{{ form.sistemas_consultorias.name }}" value="{{ value }}" id="{{ value }}" {% if form.sistemas_consultorias.data == value %}checked{% endif %}>
+                        <label class="form-check-label" for="{{ value }}">
+                            {{ label }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
-        
+
         <div class="mb-3 form-check">
             {{ form.sistema_atualizado(class="form-check-input") }}
             {{ form.sistema_atualizado.label(class="form-check-label") }}
         </div>
-        
+
         <button type="submit" class="btn btn-primary">Cadastrar</button>
     </form>
 </div>
