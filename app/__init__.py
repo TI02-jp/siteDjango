@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Carrega variáveis do .env
 load_dotenv()
@@ -37,7 +38,7 @@ def inject_now():
     from datetime import datetime
     return {'now': datetime.now}
 
-# Criação das tabelas (apenas para desenvolvimento, não use em produção)
+# Criação das tabelas (apenas para desenvolvimento)
 with app.app_context():
     db.create_all()  # Isso cria as tabelas no banco de dados, se não existirem
 

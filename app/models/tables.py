@@ -23,8 +23,6 @@ class JsonString(TypeDecorator):
             return json.loads(value)
         return None
 
-# Modelos
-
 class User(db.Model, UserMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)

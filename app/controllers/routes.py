@@ -19,7 +19,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
-            login_user(user)  # <- ESSENCIAL
+            login_user(user)
             flash('Login bem-sucedido!', 'success')
             return redirect(url_for('dashboard'))
         else:
@@ -108,13 +108,22 @@ def cadastrar_empresa():
 @login_required
 def visualizar_empresas():
     empresas = Empresa.query.all()  # Buscar todas as empresas cadastradas
+
+    # Garante que DataAbertura seja datetime (para evitar erro no template)
+    for empresa in empresas:
+        if empresa.DataAbertura and isinstance(empresa.DataAbertura, str):
+            try:
+                empresa.DataAbertura = datetime.strptime(empresa.DataAbertura, '%Y-%m-%d')
+            except ValueError:
+                empresa.DataAbertura = None
+
     print("Empresas encontradas:", empresas)
     return render_template('empresas/listar.html', empresas=empresas)
 
 @app.route('/relatorios')
 @login_required
 def relatorios():
-    # Implemente a lógica para gerar relatórios ou exibir dados específicos
+    # Implementa a lógica para gerar relatórios ou exibir dados específicos
     return render_template('relatorios.html')
 
 @app.route('/logout')

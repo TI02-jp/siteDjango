@@ -9,20 +9,17 @@ class EmpresaForm(FlaskForm):
     data_abertura = DateField('Data de Abertura', format='%d-%m-%Y', validators=[DataRequired()])
     socio_administrador = StringField('Sócio Administrador', validators=[DataRequired()])
     
-    # Muda para RadioField para permitir apenas uma escolha
     tributacao = RadioField('Tributação', choices=[('Simples Nacional', 'Simples Nacional'), 
                                                 ('Lucro Presumido', 'Lucro Presumido'), 
                                                 ('Lucro Real', 'Lucro Real')], 
                             validators=[DataRequired()])
     
-    # Muda para RadioField para permitir apenas uma escolha
     regime_lancamento = RadioField('Regime de Lançamento', choices=[('CAIXA', 'Caixa'), 
                                                                 ('COMPETENCIA', 'Competência')], 
                                 validators=[DataRequired()])
     
     atividade_principal = StringField('Atividade Principal', validators=[DataRequired()])
     
-    # Muda para SelectMultipleField para permitir múltiplas escolhas
     sistemas_consultorias = RadioField('Sistemas e Consultorias', 
                                             choices=[('', 'Nenhum'),
                                                         ('IOB', 'IOB'), 
