@@ -17,8 +17,8 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
-            login_user(user)
-            flash('Login bem-sucedido!', 'success')
+            login_user(user, remember=form.remember_me.data)
+            flash('Login bem-sucedido!')
             return redirect(url_for('dashboard'))
         else:
             flash('Credenciais inválidas', 'danger')
@@ -115,7 +115,7 @@ def relatorios():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 # Rota para teste da conexão com banco
 @app.route('/test_connection')
