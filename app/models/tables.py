@@ -61,8 +61,8 @@ class Empresa(db.Model):
     Tributacao = db.Column(db.String(50))
     RegimeLancamento = db.Column(db.Enum('CAIXA', 'COMPETENCIA'))
     SistemasConsultorias = db.Column(db.String(200))
-    SistemaAtualizado = db.Column(db.Boolean)
-    CodigoEmpresa = db.Column(db.String(50), nullable=False)
+    SistemaUtilizado = db.Column(db.String(150))
+    CodigoEmpresa = db.Column(db.String(100), nullable=False)
 
     def __repr__(self):
         return f"<Empresa {self.NomeEmpresa}>"

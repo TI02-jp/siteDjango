@@ -17,17 +17,14 @@
         <header class="mb-4">
             <nav class="navbar navbar-expand-lg navbar-light bg-light px-3">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="/">SISTEMA EMPRESAS</a>
+                    <span class="navbar-brand" href="/">SISTEMA EMPRESAS</span>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('visualizar_empresas') }}">Empresas</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('cadastrar_empresa') }}">Cadastrar</a>
+                                <a class="nav-link" href="{{ url_for('dashboard') }}">Principal</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('logout') }}">Sair</a>
@@ -39,16 +36,16 @@
         </header>
 
         <!-- Mensagens Flash -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% with messages = get_flashed_messages() %}
             {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
+                <div id="flash-message" class="alert alert-success flash-floating" role="alert">
+                    {{ messages[0] }}
+                </div>
             {% endif %}
         {% endwith %}
+
+
+        <script src="{{ url_for('static', filename='javascript/mensagens.js') }}"></script>
 
         <!-- Conteúdo principal -->
         <main>

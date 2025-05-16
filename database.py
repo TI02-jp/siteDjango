@@ -43,7 +43,7 @@ class DatabaseManager:
             return False
 
     def execute_query(self, query, params=None):
-        """Executa uma query SQL"""
+        """Executa uma query SQL de modificação (INSERT, UPDATE, DELETE, ALTER)"""
         try:
             self.cursor.execute(query, params or ())
             self.connection.commit()
@@ -54,13 +54,23 @@ class DatabaseManager:
             logger.error(f"Erro na query: {err}\nQuery: {query}")
             return False
 
-    def close(self):
-        """Fecha a conexão com o banco de dados"""
-        if self.connection and self.connection.is_connected():
-            if self.cursor:
-                self.cursor.close()
-            self.connection.close()
-            logger.info("Conexão MySQL encerrada")
+    def fetch_one(self, query, params=None):
+        """Executa uma query SQL de consulta e retorna uma linha"""
+        try:
+            self.cursor.execute(query, params or ())
+            return self.cursor.fetchone()
+        except mysql.connector.Error as err:
+            logger.error(f"Erro na query: {err}\nQuery: {query}")
+            return None
+
+    def fetch_all(self, query, params=None):
+        """Executa uma query SQL de consulta e retorna todas as linhas"""
+        try:
+            self.cursor.execute(query, params or ())
+            return self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            logger.error(f"Erro na query: {err}\nQuery: {query}")
+            return None
 
     def check_table_exists(self, table_name):
         """Verifica se uma tabela existe no banco de dados"""
@@ -69,9 +79,16 @@ class DatabaseManager:
         FROM information_schema.tables 
         WHERE table_schema = %s AND table_name = %s
         """
-        self.execute_query(query, (os.getenv('DB_NAME'), table_name))
-        result = self.cursor.fetchone()
+        result = self.fetch_one(query, (os.getenv('DB_NAME'), table_name))
         return result['count'] > 0 if result else False
+
+    def close(self):
+        """Fecha a conexão com o banco de dados"""
+        if self.connection and self.connection.is_connected():
+            if self.cursor:
+                self.cursor.close()
+            self.connection.close()
+            logger.info("Conexão MySQL encerrada")
 
 def main():
     db = DatabaseManager()
@@ -92,20 +109,30 @@ def main():
         """
         if db.execute_query(alter_query):
             logger.info("Coluna DataAberturaEmpresa alterada para NOT NULL")
-        
-        # 3. Adicionar PRIMARY KEY (se não existir)
-        pk_query = """
-        ALTER TABLE tbl_empresas
-        ADD PRIMARY KEY (IdEmpresas);
+        else:
+            logger.warning("Falha ao alterar coluna DataAberturaEmpresa")
+
+        # 3. Verificar se já existe PRIMARY KEY antes de tentar adicionar
+        pk_check_query = """
+        SELECT COUNT(*) as pk_count
+        FROM information_schema.table_constraints
+        WHERE table_schema = %s
+        AND table_name = %s
+        AND constraint_type = 'PRIMARY KEY'
         """
-        try:
+        pk_exists = db.fetch_one(pk_check_query, (os.getenv('DB_NAME'), 'tbl_empresas'))
+        
+        if pk_exists and pk_exists['pk_count'] == 0:
+            pk_query = """
+            ALTER TABLE tbl_empresas
+            ADD PRIMARY KEY (IdEmpresas);
+            """
             if db.execute_query(pk_query):
                 logger.info("Primary Key adicionada com sucesso")
-        except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_PRIMARY_KEY_DEFINED:
-                logger.info("Primary Key já existe na tabela")
             else:
-                logger.error(f"Erro ao adicionar Primary Key: {err}")
+                logger.warning("Falha ao adicionar Primary Key")
+        else:
+            logger.info("Primary Key já existe na tabela")
                 
     except Exception as e:
         logger.error(f"Erro durante as operações: {e}")

@@ -1,6 +1,6 @@
-import json
 from app import db
 from sqlalchemy.types import TypeDecorator, String
+import json
 
 class JsonString(TypeDecorator):
     impl = String
@@ -20,15 +20,17 @@ class JsonString(TypeDecorator):
 
 class Empresa(db.Model):
     __tablename__ = 'tbl_empresas'
-
-    IdEmpresas = db.Column(db.String(50), primary_key=True)
-    CodigoEmpresa = db.Column(db.String(100), nullable=False)
-    NomeEmpresa = db.Column(db.String(200), nullable=False)
-    CNPJ = db.Column(db.String(14), nullable=False, unique=True)
-    DataAbertura = db.Column(db.Date, nullable=False)
-    SocioAdministrador = db.Column(db.String(200), nullable=False)
-    Tributacao = db.Column(db.String(100), nullable=False)
-    RegimeLancamento = db.Column(db.String(20), nullable=False)
-    AtividadePrincipal = db.Column(db.String(200), nullable=False)
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    NomeEmpresa = db.Column(db.String(100), nullable=False)
+    CNPJ = db.Column(db.String(18), unique=True, nullable=False)
+    AtividadePrincipal = db.Column(db.String(100))
+    DataAbertura = db.Column(db.String(10), nullable=False)
+    SocioAdministrador = db.Column(db.String(100))
+    Tributacao = db.Column(db.String(50))
+    RegimeLancamento = db.Column(db.Enum('CAIXA', 'COMPETENCIA'))
     SistemasConsultorias = db.Column(JsonString(500))
-    SistemaAtualizado = db.Column(db.Boolean, default=False)
+    SistemaUtilizado = db.Column(db.String(150))
+    CodigoEmpresa = db.Column(db.String(100), nullable=False)
+
+    

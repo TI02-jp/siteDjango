@@ -1,13 +1,11 @@
-from flask import render_template, redirect, url_for, flash, session
+from flask import render_template, redirect, url_for, flash
 from flask_login import current_user, login_required, login_user, logout_user
 from app import app, db
 from app.loginForms import LoginForm, RegistrationForm
-from app.models.tables import User
-from sqlalchemy import text
+from app.models.tables import User, Empresa
 from app.forms import EmpresaForm
 from datetime import datetime
-from app.models.tables import Empresa, RegimeLancamento
-import uuid
+import re
 
 @app.route('/')
 def home():
@@ -26,17 +24,10 @@ def login():
             flash('Credenciais inválidas', 'danger')
     return render_template('login.html', form=form)
 
-# Rota do Dashboard (após o login)
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    return render_template('dashboard.html')
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        # Verifica se já existe um usuário com mesmo username ou email
         existing_user = User.query.filter(
             (User.username == form.username.data) | (User.email == form.email.data)
         ).first()
@@ -44,12 +35,10 @@ def register():
             flash('Usuário ou email já cadastrado.', 'warning')
             return redirect(url_for('register'))
 
-        # Cria novo usuário
         user = User(
             username=form.username.data,
             email=form.email.data,
-            name=form.name.data,
-            password=form.password.data
+            name=form.name.data
         )
         user.set_password(form.password.data)
         db.session.add(user)
@@ -59,38 +48,32 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-
-@app.route('/test_connection')
-def test_connection():
-    try:
-        
-        result = db.session.execute(text('SELECT 1'))
-        return "Conexão bem-sucedida com o banco de dados!"
-    except Exception as e:
-        return f"Erro na conexão: {str(e)}", 500
-    
-@app.route('/users')
-def list_users():
-    users = User.query.all()
-    print(users)
-    return render_template('list_users.html', users=users)
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
 
 @app.route('/cadastrar_empresa', methods=['GET', 'POST'])
+@login_required
 def cadastrar_empresa():
     form = EmpresaForm()
     if form.validate_on_submit():
+        print("Formulário validado, tentando cadastrar...")
         try:
+            cnpj_limpo = re.sub(r'\D', '', form.cnpj.data)  # Remove caracteres não numéricos
+            sistemas_consultorias_str = ",".join(form.sistemas_consultorias.data) if form.sistemas_consultorias.data else ""
+
             nova_empresa = Empresa(
                 CodigoEmpresa=form.codigo_empresa.data,
                 NomeEmpresa=form.nome_empresa.data,
-                CNPJ=form.cnpj.data,
+                CNPJ=cnpj_limpo,
                 DataAbertura=form.data_abertura.data,
                 SocioAdministrador=form.socio_administrador.data,
                 Tributacao=form.tributacao.data,
                 RegimeLancamento=form.regime_lancamento.data,
                 AtividadePrincipal=form.atividade_principal.data,
-                SistemasConsultorias=form.sistemas_consultorias.data,
-                SistemaAtualizado=form.sistema_atualizado.data
+                SistemasConsultorias=sistemas_consultorias_str,
+                SistemaUtilizado=form.sistema_utilizado.data
             )
 
             db.session.add(nova_empresa)
@@ -101,15 +84,18 @@ def cadastrar_empresa():
         except Exception as e:
             db.session.rollback()
             flash(f'Erro ao cadastrar empresa: {e}', 'danger')
+    else:
+        print("Formulário não validado:")
+        print(form.errors)
 
     return render_template('empresas/cadastrar.html', form=form)
 
 @app.route('/listar_empresas')
 @login_required
-def visualizar_empresas():
-    empresas = Empresa.query.all()  # Buscar todas as empresas cadastradas
+def listar_empresas():
+    empresas = Empresa.query.all()
 
-    # Garante que DataAbertura seja datetime (para evitar erro no template)
+    # Converte DataAbertura para datetime se necessário
     for empresa in empresas:
         if empresa.DataAbertura and isinstance(empresa.DataAbertura, str):
             try:
@@ -117,18 +103,33 @@ def visualizar_empresas():
             except ValueError:
                 empresa.DataAbertura = None
 
-    print("Empresas encontradas:", empresas)
     return render_template('empresas/listar.html', empresas=empresas)
 
 @app.route('/relatorios')
 @login_required
 def relatorios():
-    # Implementa a lógica para gerar relatórios ou exibir dados específicos
+    # Aqui pode implementar lógica de relatórios
     return render_template('relatorios.html')
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    flash('Você saiu da conta.', 'info')
     return redirect(url_for('login'))
+
+# Rota para teste da conexão com banco
+@app.route('/test_connection')
+def test_connection():
+    try:
+        from sqlalchemy import text
+        result = db.session.execute(text('SELECT 1'))
+        return "Conexão bem-sucedida com o banco de dados!"
+    except Exception as e:
+        return f"Erro na conexão: {str(e)}", 500
+
+# Exemplo para listar usuários cadastrados (somente para admins ou dev)
+@app.route('/users')
+@login_required
+def list_users():
+    users = User.query.all()
+    return render_template('list_users.html', users=users)
