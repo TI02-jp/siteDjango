@@ -25,7 +25,10 @@
                 <td>{{ empresa.DataAbertura.strftime('%d/%m/%Y') if empresa.DataAbertura else 'N/A' }}</td>
                 <td class="acao-col">
                     <a href="#" class="btn btn-sm btn-custom me-2">Editar</a>
-                    <a href="#" class="btn btn-sm btn-danger">Excluir</a>
+                        <form id="form-excluir-{{ empresa.id }}" action="{{ url_for('excluir_empresa', id=empresa.id) }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="button" class="btn btn-sm btn-danger" onclick="confirmarExclusao({{ empresa.id }})">Excluir</button>
+                        </form>
                 </td>
             </tr>
             {% else %}
@@ -40,4 +43,33 @@
         <a href="{{ url_for('cadastrar_empresa') }}" class="btn btn-custom px-4">Nova Empresa</a>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Bootstrap Icons (para ícones nos botões do alerta) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<script>
+function confirmarExclusao(id) {
+    Swal.fire({
+        title: 'Você tem certeza?',
+        html: '<p class="text-muted">Essa ação é irreversível!</p>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="bi bi-check-circle"></i> Sim, excluir!',
+        cancelButtonText: '<i class="bi bi-x-circle"></i> Cancelar',
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: 'btn btn-danger me-2',
+            cancelButton: 'btn btn-secondary'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('form-excluir-' + id).submit();
+        }
+    });
+}
+</script>
 {% endblock %}

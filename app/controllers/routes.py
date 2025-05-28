@@ -105,6 +105,19 @@ def listar_empresas():
 
     return render_template('empresas/listar.html', empresas=empresas)
 
+@app.route('/empresa/excluir/<int:id>', methods=['POST'])
+@login_required
+def excluir_empresa(id):
+    empresa = Empresa.query.get_or_404(id)
+    try:
+        db.session.delete(empresa)
+        db.session.commit()
+        flash('Empresa excluída com sucesso!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erro ao excluir empresa: {e}', 'danger')
+    return redirect(url_for('listar_empresas'))
+
 @app.route('/relatorios')
 @login_required
 def relatorios():
