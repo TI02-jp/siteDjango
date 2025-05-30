@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_required, login_user, logout_user
 from app import app, db
 from app.loginForms import LoginForm, RegistrationForm
@@ -117,6 +117,25 @@ def excluir_empresa(id):
         db.session.rollback()
         flash(f'Erro ao excluir empresa: {e}', 'danger')
     return redirect(url_for('listar_empresas'))
+
+@app.route('/empresa/editar/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editar_empresa(id):
+    empresa = Empresa.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        empresa.NomeEmpresa = request.form['nome']
+        empresa.CNPJ = request.form['cnpj']
+        empresa.DataAbertura = datetime.strptime(request.form['data_abertura'], '%Y-%m-%d')
+        try:
+            db.session.commit()
+            flash('Empresa atualizada com sucesso!', 'success')
+            return redirect(url_for('listar_empresas'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao atualizar empresa: {e}', 'danger')
+    
+    return render_template('empresas/editar_empresa.html', empresa=empresa)
 
 @app.route('/relatorios')
 @login_required
