@@ -1,11 +1,21 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, abort
+from functools import wraps
 from flask_login import current_user, login_required, login_user, logout_user
 from app import app, db
 from app.loginForms import LoginForm, RegistrationForm
 from app.models.tables import User, Empresa
-from app.forms import EmpresaForm
+from app.forms import EmpresaForm, EditUserForm
 from datetime import datetime
 import re
+
+def admin_required(f):
+    @wraps(f)
+    @login_required
+    def decorated_function(*args, **kwargs):
+        if current_user.role != 'admin':
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/')
 def home():
@@ -107,6 +117,7 @@ def listar_empresas():
 
 @app.route('/empresa/excluir/<int:id>', methods=['POST'])
 @login_required
+@admin_required
 def excluir_empresa(id):
     empresa = Empresa.query.get_or_404(id)
     try:
@@ -122,11 +133,9 @@ def excluir_empresa(id):
 @login_required
 def editar_empresa(id):
     empresa = Empresa.query.get_or_404(id)
-    
-    if request.method == 'POST':
-        empresa.NomeEmpresa = request.form['nome']
-        empresa.CNPJ = request.form['cnpj']
-        empresa.DataAbertura = datetime.strptime(request.form['data_abertura'], '%Y-%m-%d')
+    form = EmpresaForm(obj=empresa)
+    if form.validate_on_submit():
+        form.populate_obj(empresa)
         try:
             db.session.commit()
             flash('Empresa atualizada com sucesso!', 'success')
@@ -134,11 +143,11 @@ def editar_empresa(id):
         except Exception as e:
             db.session.rollback()
             flash(f'Erro ao atualizar empresa: {e}', 'danger')
-    
-    return render_template('empresas/editar_empresa.html', empresa=empresa)
+    return render_template('empresas/editar_empresa.html', form=form, empresa=empresa)
 
 @app.route('/relatorios')
 @login_required
+@admin_required
 def relatorios():
     # Aqui pode implementar lógica de relatórios
     return render_template('relatorios.html')
@@ -162,6 +171,41 @@ def test_connection():
 # Exemplo para listar usuários cadastrados (somente para admins ou dev)
 @app.route('/users')
 @login_required
+@admin_required
 def list_users():
     users = User.query.all()
     return render_template('list_users.html', users=users)
+
+@app.route('/user/edit/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_user(user_id):
+    user = User.query.get_or_404(user_id)
+    form = EditUserForm(obj=user)
+    if form.validate_on_submit():
+        user.username = form.username.data
+        user.email = form.email.data
+        user.name = form.name.data
+        user.role = form.role.data
+        try:
+            db.session.commit()
+            flash('Usuário atualizado com sucesso!', 'success')
+            return redirect(url_for('list_users'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao atualizar usuário: {e}', 'danger')
+    return render_template('edit_user.html', form=form)
+
+@app.route('/user/delete/<int:user_id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    try:
+        db.session.delete(user)
+        db.session.commit()
+        flash('Usuário excluído com sucesso!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erro ao excluir usuário: {e}', 'danger')
+    return redirect(url_for('list_users'))

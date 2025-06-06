@@ -31,12 +31,13 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
 
+    role = db.Column(db.String(20), default='user')
+
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
-    # ...
 
 class Post(db.Model):
     __tablename__ = "posts"

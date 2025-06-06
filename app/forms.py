@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, RadioField, SubmitField, DateField, SelectMultipleField
-from wtforms.validators import DataRequired
+from wtforms import StringField, RadioField, SubmitField, DateField, SelectMultipleField, SelectField
+from wtforms.validators import DataRequired, Email
 
 class EmpresaForm(FlaskForm):
     codigo_empresa = StringField('Código da Empresa', validators=[DataRequired()])
@@ -36,3 +36,9 @@ class EmpresaForm(FlaskForm):
 
     sistema_utilizado = StringField('Sistema Utilizado')
     submit = SubmitField('Cadastrar Empresa')
+
+class EditUserForm(FlaskForm):
+    username = StringField('Usuário', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    name = StringField('Nome', validators=[DataRequired()])
+    role = SelectField('Perfil', choices=[('user', 'Usuário'), ('admin', 'Administrador')], validators=[DataRequired()])
