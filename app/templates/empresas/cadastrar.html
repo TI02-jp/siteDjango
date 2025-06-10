@@ -4,41 +4,41 @@
 
 {% block content %}
 <div class="container mt-4" style="max-width: 900px;">
-    <div class="card shadow-sm p-4">
-        <h2 class="mb-4 text-center">Cadastro de Empresa</h2>
+    <div class="card shadow-lg p-5 border-0 rounded-4">
+        <h2 class="mb-4 text-center text-primary fw-semibold">Cadastro de Empresa</h2>
 
         <form method="POST" action="{{ url_for('cadastrar_empresa') }}" novalidate>
             {{ form.hidden_tag() }}
 
-            <div class="row g-3">
+            <div class="row g-4">
                 <div class="col-md-6">
-                    <div>
-                        {{ form.codigo_empresa.label(class="form-label") }}
+                    <div class="form-floating">
                         {{ form.codigo_empresa(class="form-control", placeholder="Código da empresa") }}
+                        {{ form.codigo_empresa.label(class="form-label") }}
                     </div>
-                    <div>
-                        {{ form.nome_empresa.label(class="form-label") }}
+                    <div class="form-floating mt-3">
                         {{ form.nome_empresa(class="form-control", placeholder="Nome da empresa") }}
+                        {{ form.nome_empresa.label(class="form-label") }}
                     </div>
-                    <div>
-                        {{ form.cnpj.label(class="form-label") }}
+                    <div class="form-floating mt-3">
                         {{ form.cnpj(class="form-control", id="cnpj", placeholder="00.000.000/0000-00") }}
+                        {{ form.cnpj.label(class="form-label") }}
                     </div>
-                    <div>
-                        {{ form.data_abertura.label(class="form-label") }}
+                    <div class="mt-3">
+                        <label for="data_abertura" class="form-label">{{ form.data_abertura.label.text }}</label>
                         {{ form.data_abertura(class="form-control", id="data_abertura", type="date") }}
                     </div>
                 </div>
 
                 <div class="col-md-6">
-                    <div>
-                        {{ form.socio_administrador.label(class="form-label") }}
+                    <div class="form-floating">
                         {{ form.socio_administrador(class="form-control", placeholder="Sócio administrador") }}
+                        {{ form.socio_administrador.label(class="form-label") }}
                     </div>
 
-                    <div>
-                        {{ form.tributacao.label(class="form-label") }}
-                        <div>
+                    <div class="mt-4">
+                        <label class="form-label">{{ form.tributacao.label.text }}</label>
+                        <div class="d-flex flex-column gap-2">
                             {% for value, label in form.tributacao.choices %}
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tributacao" value="{{ value }}" id="tributacao-{{ loop.index }}" {% if form.tributacao.data == value %}checked{% endif %}>
@@ -48,9 +48,9 @@
                         </div>
                     </div>
 
-                    <div>
-                        {{ form.regime_lancamento.label(class="form-label") }}
-                        <div>
+                    <div class="mt-3">
+                        <label class="form-label">{{ form.regime_lancamento.label.text }}</label>
+                        <div class="d-flex flex-column gap-2">
                             {% for value, label in form.regime_lancamento.choices %}
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="regime_lancamento" value="{{ value }}" id="regime-{{ loop.index }}" {% if form.regime_lancamento.data == value %}checked{% endif %}>
@@ -60,16 +60,16 @@
                         </div>
                     </div>
 
-                    <div>
-                        {{ form.atividade_principal.label(class="form-label") }}
+                    <div class="form-floating mt-3">
                         {{ form.atividade_principal(class="form-control", placeholder="Atividade principal") }}
+                        {{ form.atividade_principal.label(class="form-label") }}
                     </div>
                 </div>
             </div>
 
-            <div class="mt-3">
-                {{ form.sistemas_consultorias.label(class="form-label") }}
-                <div>
+            <div class="mt-4">
+                <label class="form-label">{{ form.sistemas_consultorias.label.text }}</label>
+                <div class="d-flex flex-wrap gap-3">
                     {% for value, label in form.sistemas_consultorias.choices %}
                         <div class="form-check form-check-inline">
                             <input 
@@ -86,13 +86,15 @@
                 </div>
             </div>
 
-            <div class="form-group mt-3">
-                <label for="sistema_utilizado" class="form-label">{{ form.sistema_utilizado.label.text }}</label>
+            <div class="form-floating mt-4">
                 {{ form.sistema_utilizado(class="form-control", id="sistema_utilizado") }}
+                {{ form.sistema_utilizado.label(class="form-label") }}
             </div>
 
-            <div class="d-flex justify-content-center mt-4">
-                <button type="submit" class="btn btn-custom px-5">Cadastrar</button>
+            <div class="d-flex justify-content-center mt-5">
+                <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+                    <i class="bi bi-check-circle me-2"></i>Cadastrar
+                </button>
             </div>
         </form>
     </div>

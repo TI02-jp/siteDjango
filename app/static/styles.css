@@ -1,8 +1,8 @@
 /* -----------------------------
-Tipografia e estilo base
+Fonte personalizada moderna
 ----------------------------- */
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Inter', sans-serif;
     background-color: #f4f4f4;
     color: #333;
     margin: 0;
@@ -18,6 +18,17 @@ header {
     color: white;
     padding: 20px;
     font-size: 2em;
+}
+
+/* -----------------------------
+Navbar (fixa com sombra leve)
+----------------------------- */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background-color: #ffffff !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* -----------------------------
@@ -62,77 +73,59 @@ Botões e Ações
     background-color: #ff8800;
     text-decoration: none;
     border-radius: 6px;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
     border: none;
     cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn:hover, .btn-custom:hover, .submit-btn:hover {
     background-color: #0558c5;
 }
 
+.btn:focus, .btn-custom:focus, .submit-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(5, 88, 197, 0.4);
+}
+
 .btn-sm {
-    padding: 0.25rem 0.5rem; /* Ajuste tamanho dos botões pequenos */
+    padding: 0.25rem 0.5rem;
 }
 
 /* -----------------------------
-Tabela de Usuários
+Tabelas (Empresas e Usuários)
 ----------------------------- */
-.user-table {
+.table-responsive {
+    overflow-x: auto;
+}
+
+.user-table, .table-empresas {
     width: 100%;
     max-width: 1000px;
     margin: 0 auto;
     border-collapse: collapse;
 }
 
-.user-table th,
-.user-table td {
+.user-table th, .user-table td,
+.table-empresas th, .table-empresas td {
     border: 1px solid #ccc;
     padding: 12px;
     text-align: left;
-}
-
-.user-table th {
-    background-color: #0558c5;
-    color: white;
-}
-
-.user-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-/* -----------------------------
-Tabela de Empresas
------------------------------ */
-.table-empresas {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    border-collapse: collapse;
-}
-
-.table-empresas th,
-.table-empresas td {
-    border: 1px solid #ccc;
-    padding: 10px 12px;
     vertical-align: middle;
+    white-space: nowrap;
 }
 
-/* Cabeçalhos da tabela */
-.table-empresas thead th {
+.user-table th, .table-empresas thead th {
     background-color: #0558c5;
     color: white;
     text-align: center;
 }
 
-/* Prevenir quebra de linha em colunas específicas */
-.codigo-col,
-.cnpj-col,
-.acao-col {
-    white-space: nowrap;
+.user-table tr:nth-child(even),
+.table-empresas tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
 }
 
-/* Larguras específicas para colunas */
 .codigo-col {
     width: 100px;
 }
@@ -146,12 +139,26 @@ Tabela de Empresas
     text-align: center;
 }
 
-/* Espaçamento entre botões na tabela */
+th:nth-child(3),
+td:nth-child(3) {
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+th:nth-child(5),
+td:nth-child(5) {
+    min-width: 140px;
+    text-align: center;
+}
+
 .table-empresas .btn {
     margin-right: 6px;
 }
 
-/* Botões personalizados */
+/* -----------------------------
+Botões personalizados
+----------------------------- */
 .btn-custom {
     background-color: #ff8800;
     color: white;
@@ -172,33 +179,6 @@ Tabela de Empresas
     font-size: 0.9em;
 }
 
-/* Linhas pares com fundo diferenciado */
-.table-empresas tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-/* Estilos gerais para todas as tabelas */
-table th,
-table td {
-    vertical-align: middle; /* Alinha verticalmente ao centro */
-    white-space: nowrap;    /* Evita quebra de linha nas células */
-}
-
-/* Limita largura do CNPJ e corta texto longo */
-th:nth-child(3),
-td:nth-child(3) {
-    max-width: 160px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Coluna Ações alinhada e com largura mínima */
-th:nth-child(5),
-td:nth-child(5) {
-    min-width: 140px;
-    text-align: center;
-}
-
 /* -----------------------------
 Rodapé
 ----------------------------- */
@@ -213,14 +193,14 @@ footer {
 }
 
 /* -----------------------------
-Formulários (login, cadastro, etc.)
+Formulários
 ----------------------------- */
 .form-container {
     background: #fff;
     padding: 2rem;
     border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    max-width: 400px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    max-width: 480px;
     width: 100%;
     margin: 40px auto;
     text-align: left;
@@ -259,7 +239,9 @@ input:focus {
     outline: none;
 }
 
-/* Mensagem de erro */
+/* -----------------------------
+Mensagens de erro
+----------------------------- */
 .error {
     color: #e74c3c;
     font-size: 0.85rem;
@@ -279,7 +261,7 @@ a:hover {
 }
 
 /* -----------------------------
-Responsividade para telas pequenas
+Responsividade
 ----------------------------- */
 @media (max-width: 480px) {
     .form-container {
@@ -293,19 +275,21 @@ Responsividade para telas pequenas
     }
 }
 
-/* mensagem de login */
+/* -----------------------------
+Mensagem de login flutuante
+----------------------------- */
 .flash-floating {
     position: fixed;
     top: 20px;
     right: 20px;
-    max-width: 300px;          /* Largura máxima da mensagem */
+    max-width: 300px;
     width: auto;
-    background-color: #d4edda; /* Verde claro (sucesso) */
-    color: #155724;            /* Verde escuro (texto) */
+    background-color: #d4edda;
+    color: #155724;
     border: 1px solid #c3e6cb;
     padding: 12px 16px;
     border-radius: 6px;
-    z-index: 1050;
+    z-index: 9999; /* Aumenta o z-index para garantir que fique acima */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     opacity: 1;
     transition: opacity 0.5s ease;
@@ -314,4 +298,52 @@ Responsividade para telas pequenas
 .flash-floating.hide {
     opacity: 0;
     pointer-events: none;
+}
+
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Ajustes das colunas --- */
+.codigo-col {
+    width: 70px;
+}
+
+.cnpj-col {
+    width: 160px;
+}
+
+.acao-col {
+    min-width: 240px;       /* Espaço maior para os botões */
+    text-align: center;
+    white-space: nowrap;    /* Impede que quebre linha */
+}
+
+/* Espaçamento entre botões na mesma linha */
+.acao-col .btn + .btn,
+.acao-col .btn + form .btn {
+    margin-left: 0.5rem;
+}
+
+/* Botões com apenas ícones, mais compactos */
+.acao-col .btn {
+    padding: 0.375rem 0.5rem;
+    font-size: 1rem;
+}
+
+/* Responsividade para telas pequenas - empilha os botões */
+@media (max-width: 576px) {
+    .acao-col {
+        white-space: normal;   /* Permite quebra de linha */
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+    }
+    .acao-col .btn {
+        width: 100%;           /* Botões ocupam a largura total da célula */
+        margin: 0 !important;
+    }
 }

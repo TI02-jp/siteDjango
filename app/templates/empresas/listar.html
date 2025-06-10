@@ -25,14 +25,14 @@
                     <td class="cnpj-col">{{ empresa.CNPJ }}</td>
                     <td>{{ empresa.DataAbertura.strftime('%d/%m/%Y') if empresa.DataAbertura else 'N/A' }}</td>
                     <td class="acao-col text-center">
-                        <a href="{{ url_for('editar_empresa', id=empresa.id) }}" class="btn btn-sm btn-primary me-2" title="Editar empresa">
-                            <i class="bi bi-pencil"></i> Editar
+                        <a href="{{ url_for('editar_empresa', id=empresa.id) }}" class="btn btn-sm btn-primary" title="Editar empresa">
+                            <i class="bi bi-pencil"></i>
                         </a>
                         {% if current_user.role == 'admin' %}
                         <form id="form-excluir-{{ empresa.id }}" action="{{ url_for('excluir_empresa', id=empresa.id) }}" method="POST" style="display:inline;">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="button" class="btn btn-sm btn-danger" onclick="confirmarExclusao({{ empresa.id }})" title="Excluir empresa">
-                                <i class="bi bi-trash"></i> Excluir
+                                <i class="bi bi-trash"></i>
                             </button>
                         </form>
                         {% endif %}
