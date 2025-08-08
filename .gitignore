@@ -31,3 +31,6 @@ pip-wheel-metadata/
 coverage.xml
 *.cover
 nosetests.xml
+
+# ignorar arquivvo de imagem
+.static/images/
