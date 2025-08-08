@@ -34,3 +34,8 @@ nosetests.xml
 
 # ignorar arquivvo de imagem
 .static/images/
+
+*.png
+*.jpg
+*.webp
+*.pdf
