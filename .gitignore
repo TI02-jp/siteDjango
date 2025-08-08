@@ -33,7 +33,7 @@ coverage.xml
 nosetests.xml
 
 # ignorar arquivvo de imagem
-.static/images/
+.static/images
 
 *.png
 *.jpg
